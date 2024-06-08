@@ -4,9 +4,11 @@ class EDRFramework
   def self.run(args)
     if args.include?('-p')
       path = args[args.index('-p') + 1]
-      fork do
+      pid = fork do
         puts "Process started for #{path}"
       end
+
+      Process.detach(pid)
     end
   end
 end
