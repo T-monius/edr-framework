@@ -2,7 +2,9 @@ class EDRFramework
   def initialize;end
 
   def self.run
-    puts "Process started"
+    fork do
+      puts "Process started"
+    end
   end
 end
 
