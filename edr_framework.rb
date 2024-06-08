@@ -6,9 +6,10 @@ class EDRFramework
       path = args[args.index('-p') + 1]
       pid = fork do
         puts "Process started for #{path}"
-        f = File.open(path, 'a')
-        puts "#{path} created" if File.file?(path)
-        f.close
+        File.open("edr-files/#{path}", 'a') do |f|
+          f.write("some network data\n")
+        end
+        puts "#{path} created/modified" if File.file?(path)
       end
 
       Process.detach(pid)
