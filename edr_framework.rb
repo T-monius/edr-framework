@@ -17,8 +17,9 @@ class EDRFramework
           File.open("edr-files/#{path}", 'w')
           puts "#{path} created" if File.file?("edr-files/#{path}")
         elsif args.include?('-u')
+          data = args[args.index('-p') + 2]
           File.open("edr-files/#{path}", 'a') do |f|
-            f.write("some network data\n")
+            f.write("#{data}\n")
           end
           puts "#{path} modified" if File.file?("edr-files/#{path}")
         end
