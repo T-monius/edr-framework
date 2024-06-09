@@ -1,11 +1,14 @@
+require 'logger'
 require 'socket'
+require 'yaml'
 
 class EDRFramework
   def initialize;end
 
-  def self.run(args)
+  def self.run(args, lgr)
     pid = fork do
-      puts "Process started"
+      process_info = {:operation => 'process started', :username => ENV['USER'], :cmd_line => ENV['SHELL'].split('/').last }
+      lgr.info {  process_info.to_yaml }
       if args.include?('-p')
         path = args[args.index('-p') + 1]
         if args.include?('-d')
@@ -31,4 +34,5 @@ class EDRFramework
 end
 
 args = ARGV.to_ary
-EDRFramework.run(args)
+logger = Logger.new('logs/edr_framework_log.yaml', level: Logger::INFO)
+EDRFramework.run(args, logger)
