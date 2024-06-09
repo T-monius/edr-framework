@@ -13,11 +13,14 @@ class EDRFramework
         path = args[args.index('-p') + 1]
         if args.include?('-d')
           File.delete("edr-files/#{path}") if File.file?("edr-files/#{path}")
-        else
+        elsif args.include?('-c')
+          File.open("edr-files/#{path}", 'w')
+          puts "#{path} created" if File.file?("edr-files/#{path}")
+        elsif args.include?('-u')
           File.open("edr-files/#{path}", 'a') do |f|
             f.write("some network data\n")
           end
-          puts "#{path} created/modified" if File.file?("edr-files/#{path}")
+          puts "#{path} modified" if File.file?("edr-files/#{path}")
         end
       elsif args.include?('-n')
         host = args[args.index('-n') + 1]
