@@ -7,21 +7,33 @@ class EDRFramework
 
   def self.run(args, lgr)
     pid = fork do
-      process_info = {:operation => 'process started', :username => ENV['USER'], :cmd_line => ENV['SHELL'].split('/').last }
+      process_info = {:username => ENV['USER'], :cmd_line => ENV['SHELL'].split('/').last }
       lgr.info {  process_info.to_yaml }
       if args.include?('-p')
         path = args[args.index('-p') + 1]
+        edr_file_dir = "edr-files"
+        new_path = "#{edr_file_dir}/#{path}"
+        dir_realpath = File.realpath(edr_file_dir)
+        full_path = "#{dir_realpath}/#{path}"
+        file_op_info = { full_path: dir_realpath, process_name: $PROGRAM_NAME }
         if args.include?('-d')
           File.delete("edr-files/#{path}") if File.file?("edr-files/#{path}")
+          file_op_info[:full_path] = full_path
+          file_op_info[:activity_descriptor] = 'delete'
+          lgr.info {  process_info.merge(file_op_info).to_yaml }
         elsif args.include?('-c')
-          File.open("edr-files/#{path}", 'w')
-          puts "#{path} created" if File.file?("edr-files/#{path}")
+          File.open(new_path, 'w')
+          file_op_info[:full_path] = full_path
+          file_op_info[:activity_descriptor] = 'create'
+          lgr.info {  process_info.merge(file_op_info).to_yaml }
         elsif args.include?('-u')
           data = args[args.index('-p') + 2]
           File.open("edr-files/#{path}", 'a') do |f|
             f.write("#{data}\n")
           end
-          puts "#{path} modified" if File.file?("edr-files/#{path}")
+          file_op_info[:full_path] = full_path
+          file_op_info[:activity_descriptor] = 'modified'
+          lgr.info {  process_info.merge(file_op_info).to_yaml }
         end
       elsif args.include?('-n')
         host = args[args.index('-n') + 1]
