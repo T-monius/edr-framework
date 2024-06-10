@@ -40,9 +40,12 @@ class EDRFramework
         port = args[args.index('-n') + 2]
         data = args[args.index('-n') + 3]
         client = TCPSocket.open(host, port)
+        network_op_info = { activity_descriptor: 'transmitted data', destination_address: host, destination_port: port, data_bytes: data.bytesize, protocol: "tcp", process_name: $PROGRAM_NAME }
 
         client.puts data
         client.close
+
+        lgr.info {  process_info.merge(network_op_info).to_yaml }
       end
     end
     Process.detach(pid)
